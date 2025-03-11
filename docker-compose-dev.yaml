@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    networks:
+      - dcube-teachers-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=dcube
+      - MYSQL_USER=dcube
+      - MYSQL_PASSWORD=dcube
+      - MYSQL_DATABASE=dcube
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: always
+    networks:
+      - dcube-teachers-network
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_USER=dcube
+      - MYSQL_PASSWORD=dcube
+      - MYSQL_DATABASE=dcube
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+
+networks:
+  dcube-teachers-network:
