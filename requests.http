@@ -1,0 +1,84 @@
+# Register one or more students to a specified teacher.
+
+POST http://localhost:3000/api/register
+# Headers: Content-Type: application/json
+
+# Request body example:
+{
+  "teacher": "teacherken@gmail.com"
+  "students":
+    [
+      "studentjon@gmail.com",
+      "studenthon@gmail.com"
+    ]
+}
+
+### Retrieve students who are registered to ALL of the given teachers
+GET http://localhost:3000/api/commonstudents?teacher=teacherken%40gmail.com
+
+# Success response status: HTTP 200
+# Success response body 1:
+# {
+#   "students" :
+#     [
+#       "commonstudent1@gmail.com",
+#       "commonstudent2@gmail.com",
+#       "student_only_under_teacher_ken@gmail.com"
+#     ]
+# }
+
+### Retrieve students who are registered to ALL of the given teachers
+GET http://localhost:3000/api/commonstudents?teacher=teacherken%40gmail.com&teacher=teacherjoe%40gmail.com
+
+# Success response body 2:
+# {
+#   "students" :
+#     [
+#       "commonstudent1@gmail.com",
+#       "commonstudent2@gmail.com"
+#     ]
+# }
+
+### Suspend a specified student.
+POST http://localhost:3000/api/suspend
+
+{
+  "student" : "studentmary@gmail.com"
+}
+
+### Retrieve a list of students who can receive a given notification
+POST http://localhost:3000/api/retrievefornotifications
+# Headers: Content-Type: application/json
+# Success response status: HTTP 200
+# Request body example 1:
+{
+  "teacher":  "teacherken@gmail.com",
+  "notification": "Hello students! @studentagnes@gmail.com @studentmiche@gmail.com"
+}
+
+# Success response body 1:
+# {
+#   "recipients":
+#     [
+#       "studentbob@gmail.com",
+#       "studentagnes@gmail.com",
+#       "studentmiche@gmail.com"
+#     ]
+# }
+
+### Retrieve a list of students who can receive a given notification
+POST http://localhost:3000/api/retrievefornotifications
+# Headers: Content-Type: application/json
+# Success response status: HTTP 200
+{
+  "teacher":  "teacherken@gmail.com",
+  "notification": "Hey everybody"
+}
+
+# Success response body 2:
+# {
+#   "recipients":
+#     [
+#       "studentbob@gmail.com"
+#     ]
+# }

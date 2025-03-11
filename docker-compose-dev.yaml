@@ -22,9 +22,11 @@ services:
     environment:
       - MYSQL_HOST=db
       - MYSQL_PORT=3306
-      - MYSQL_USER=dcube
+      - MYSQL_USERNAME=dcube
       - MYSQL_PASSWORD=dcube
       - MYSQL_DATABASE=dcube
+    ports:
+      - 3000:3000
     volumes:
       - .:/usr/src/app
     depends_on:
