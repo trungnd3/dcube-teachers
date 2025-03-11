@@ -10,7 +10,6 @@ export class ApiService {
   }
 
   createTeacher(email: string) {
-    console.log(email);
     return this.teachersService.create(email);
   }
 
