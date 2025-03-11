@@ -14,10 +14,10 @@ POST http://localhost:3000/api/register
 Content-Type: application/json
 
 {
-  "teacher": "teacherken@gmail.com",
+  "teacher": "teacherjoe@gmail.com",
   "students": [
     "studentjon@gmail.com",
-    "studenthon@gmail.com"
+    "studentclark@gmail.com"
   ]
 }
 
@@ -32,7 +32,8 @@ POST http://localhost:3000/api/suspend
 Content-Type: application/json
 
 {
-  "student" : "studentmary@gmail.com"
+  "teacher" : "teacherken@gmail.com",
+  "student" : "studenthon@gmail.com"
 }
 
 ### Retrieve a list of students who can receive a given notification
