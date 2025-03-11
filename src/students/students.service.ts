@@ -10,9 +10,15 @@ export class StudentsService {
     private repo: Repository<Student>,
   ) {}
 
-  create(email: string) {
-    const student = this.repo.create({ email });
-    return this.repo.save(student);
+  async create(email: string) {
+    // Create student if only not exist
+    let student = await this.findByEmail(email);
+    if (!student) {
+      student = this.repo.create({ email });
+      return this.repo.save(student);
+    }
+
+    return null;
   }
 
   findByEmail(email: string) {

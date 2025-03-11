@@ -26,11 +26,6 @@ describe('StudentsService', () => {
       save: jest
         .fn()
         .mockImplementation((student: Student) => Promise.resolve(student)),
-      // as these do not actually use their return values in our sample
-      // we just make sure that their resolve is true to not crash
-      remove: jest
-        .fn()
-        .mockImplementation((student: Student) => Promise.resolve(student)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -48,5 +43,22 @@ describe('StudentsService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('should find student by email that exists', async () => {
+    const student = await service.findByEmail(oneStudent.email);
+    expect(student).not.toBeNull();
+    expect(student.id).toEqual(oneStudent.id);
+  });
+
+  // it('should not find student by email that does not exist', async () => {
+  //   const student = await service.findByEmail('rubbish@email');
+  //   expect(student).toBeNull();
+  // });
+
+  it('should create by email if not exist', async () => {
+    const student = await service.create(oneStudent.email);
+    expect(student).not.toBeNull();
+    expect(student.id).toEqual(oneStudent.id);
   });
 });
