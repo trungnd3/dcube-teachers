@@ -6,11 +6,8 @@ services:
     restart: always
     networks:
       - dcube-teachers-network
-    environment:
-      - MYSQL_ROOT_PASSWORD=dcube
-      - MYSQL_USER=dcube
-      - MYSQL_PASSWORD=dcube
-      - MYSQL_DATABASE=dcube
+    env_file:
+      - .env.dev
 
   api:
     build:
@@ -19,12 +16,11 @@ services:
     restart: always
     networks:
       - dcube-teachers-network
+    env_file:
+      - .env.dev
     environment:
       - MYSQL_HOST=db
       - MYSQL_PORT=3306
-      - MYSQL_USERNAME=dcube
-      - MYSQL_PASSWORD=dcube
-      - MYSQL_DATABASE=dcube
     ports:
       - 3000:3000
     volumes:
