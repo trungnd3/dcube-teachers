@@ -19,8 +19,8 @@ services:
     env_file:
       - .env.dev
     environment:
-      - MYSQL_HOST=db
-      - MYSQL_PORT=3306
+      - DB_HOST=db
+      - DB_PORT=3306
     ports:
       - 3000:3000
     volumes:
