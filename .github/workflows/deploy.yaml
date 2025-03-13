@@ -41,7 +41,7 @@ jobs:
       - name: Clone or pull github repo
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
-          
+
           REPO_URL="https://github.com/trungnd3/dcube-teachers.git"
 
           if [ -d "$HOME/dcube-teachers/.git" ]; then
@@ -62,5 +62,5 @@ jobs:
           docker build -t dcube-teachers .
           docker container stop dcube-teachers
           docker container rm dcube-teachers
-          docker run --name dcube-teachers -d --env-file .env -p 443:3000 dcube-teachers
+          docker run --name dcube-teachers -d --env-file .env -p 443:3000 -p 80:3000 dcube-teachers
           '

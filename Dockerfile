@@ -13,6 +13,8 @@ RUN npm install --omit=dev
 # Copy the rest of the application files
 COPY . .
 
+RUN npm i -g @nestjs/cli
+
 # Build the NestJS application
 RUN npm run build
 
