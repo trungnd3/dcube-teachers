@@ -34,28 +34,28 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          cat .env
-          ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
-          scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
+          # cat .env
+          # ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
+          # scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+      # - name: Deploy to EC2
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
-          REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
-          BRANCH="main"
-          REPO_DIR="$HOME/app"
+      #     REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
+      #     BRANCH="main"
+      #     REPO_DIR="$HOME/app"
 
-          if [ -d "$REPO_DIR/.git" ]; then
-            cd "$REPO_DIR"
-            git pull origin "$BRANCH"
-          else
-            git clone "$REPO_URL" "$REPO_DIR"
-            cd "$REPO_DIR"
-          fi
+      #     if [ -d "$REPO_DIR/.git" ]; then
+      #       cd "$REPO_DIR"
+      #       git pull origin "$BRANCH"
+      #     else
+      #       git clone "$REPO_URL" "$REPO_DIR"
+      #       cd "$REPO_DIR"
+      #     fi
 
-          cp $HOME/env/.env $REPO_DIR
+      #     cp $HOME/env/.env $REPO_DIR
 
-          docker build -t dcube-teachers .
-          docker run --env-file .env -p 80:3000 dcube-teachers
-          '
+      #     docker build -t dcube-teachers .
+      #     docker run --env-file .env -p 80:3000 dcube-teachers
+      #     '
