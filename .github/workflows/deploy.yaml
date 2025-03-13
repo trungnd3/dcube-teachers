@@ -38,25 +38,26 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} "mkdir -p env"
           scp -o StrictHostKeyChecking=no -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
+      - name: Clone or pull github repo
+        run: |
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+          
+          REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
+
+          if [ -d "$HOME/dcube-teachers/.git" ]; then
+            cd $HOME/dcube-teachers
+            git pull origin main
+          else
+            git clone $REPO_URL
+            cd $HOME/dcube-teachers
+          fi
+
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
-          REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
-          BRANCH="main"
-          REPO_DIR="$HOME/app"
-
-          mkdir -p $REPO_DIR
-          cp $HOME/env/.env $REPO_DIR
-
-          if [ -d "$REPO_DIR/.git" ]; then
-            cd "$REPO_DIR"
-            git pull origin "$BRANCH"
-          else
-            git clone "$REPO_URL" "$REPO_DIR"
-            cd "$REPO_DIR"
-          fi
-
+          cp $HOME/env/.env $HOME/dcube-teachers
+          cd $HOME/dcube-teachers
           docker build -t dcube-teachers .
           docker run --env-file .env -p 80:3000 dcube-teachers
           '
