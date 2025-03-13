@@ -53,5 +53,5 @@ jobs:
           cp $HOME/env/.env $REPO_DIR
 
           docker build -t dcube-teachers .
-          docker run --env-file .env -p 80:3000 dcube-teachers
+          docker run -d --env-file .env -p 80:3000 dcube-teachers
           '
