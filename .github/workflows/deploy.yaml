@@ -46,6 +46,9 @@ jobs:
           BRANCH="main"
           REPO_DIR="$HOME/app"
 
+          mkdir -p $REPO_DIR
+          cp $HOME/env/.env $REPO_DIR
+
           if [ -d "$REPO_DIR/.git" ]; then
             cd "$REPO_DIR"
             git pull origin "$BRANCH"
@@ -54,9 +57,6 @@ jobs:
             cd "$REPO_DIR"
           fi
 
-          cp $HOME/env/.env $REPO_DIR
-
-          echo $(pwd)
           docker build -t dcube-teachers .
           docker run --env-file .env -p 80:3000 dcube-teachers
           '
