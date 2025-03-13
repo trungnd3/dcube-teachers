@@ -51,6 +51,7 @@ jobs:
             git clone $REPO_URL
             cd $HOME/dcube-teachers
           fi
+          '
 
       - name: Deploy to EC2
         run: |
