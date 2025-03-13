@@ -34,6 +34,7 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          cat .env
           ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
           scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
