@@ -1,0 +1,57 @@
+name: Build and deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+          HOST: ${{ secrets.AWS_EC2_HOST }}
+          USER: ${{ secrets.AWS_EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+
+          echo "DB_HOST=$DB_HOST" >> .env
+          echo "DB_PORT=$DB_PORT" >> .env
+          echo "DB_USER=$DB_USER" >> .env
+          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+          echo "DB_DATABASE=$DB_DATABASE" >> .env
+          ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
+          scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
+
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+
+          REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
+          BRANCH="main"
+          REPO_DIR="$HOME/app"
+
+          if [ -d "$REPO_DIR/.git" ]; then
+            cd "$REPO_DIR"
+            git pull origin "$BRANCH"
+          else
+            git clone "$REPO_URL" "$REPO_DIR"
+            cd "$REPO_DIR"
+          fi
+
+          cp $HOME/env/.env $REPO_DIR
+
+          docker build -t dcube-teachers .
+          docker run --env-file .env -p 80:3000 dcube-teachers
+          '
