@@ -62,5 +62,5 @@ jobs:
           docker build -t dcube-teachers .
           docker container stop dcube-teachers
           docker container rm dcube-teachers
-          docker run --name dcube-teachers -d --env-file .env -p 80:3000 dcube-teachers
+          docker run --name dcube-teachers -d --env-file .env -p 443:3000 dcube-teachers
           '
