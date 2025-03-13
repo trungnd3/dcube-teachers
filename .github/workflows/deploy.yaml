@@ -42,7 +42,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
           
-          REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
+          REPO_URL="https://github.com/trungnd3/dcube-teachers.git"
 
           if [ -d "$HOME/dcube-teachers/.git" ]; then
             cd $HOME/dcube-teachers
