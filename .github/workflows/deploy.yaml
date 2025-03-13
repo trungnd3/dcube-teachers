@@ -35,8 +35,8 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
           # cat .env
-          # ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
-          # scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} "mkdir env"
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
       # - name: Deploy to EC2
       #   run: |
