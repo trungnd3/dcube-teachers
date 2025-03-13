@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      PRIVATE_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+      HOST: ${{ secrets.AWS_EC2_HOST }}
+      USER: ${{ secrets.AWS_EC2_USER }}
 
     steps:
       - name: Checkout Repository
@@ -20,22 +24,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to EC2
-        env:
-          PRIVATE_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
-          HOST: ${{ secrets.AWS_EC2_HOST }}
-          USER: ${{ secrets.AWS_EC2_USER }}
-        run: |
-          echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+      - name: Write SSH PEM
+        run: echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
 
-          echo "DB_HOST=$DB_HOST" >> .env
-          echo "DB_PORT=$DB_PORT" >> .env
-          echo "DB_USER=$DB_USER" >> .env
-          echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-          echo "DB_DATABASE=$DB_DATABASE" >> .env
+      - name: Create env file and copy to EC2
+        run: |
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
           ssh -i github-ec2.pem ${USER}@${HOST} "mkdir env"
           scp -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
+      - name: Deploy to EC2
+        run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
           REPO_URL="git@github.com:trungnd3/dcube-teachers.git"
