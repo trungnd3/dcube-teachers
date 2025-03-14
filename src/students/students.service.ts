@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { literals } from 'src/constants';
+import { Injectable } from '@nestjs/common';
 import { Student } from './student.entity';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class StudentsService {
   constructor(
-    @Inject(literals.STUDENT_REPOSITORY)
+    @InjectRepository(Student)
     private repo: Repository<Student>,
   ) {}
 

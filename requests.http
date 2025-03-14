@@ -50,6 +50,5 @@ POST http://localhost:3000/api/retrievefornotifications
 Content-Type: application/json
 
 {
-  "teacher":  "teacherken@gmail.com",
-  "notification": "Hey everybody"
+  "teacher":  "teacherken@gmail.com"
 }
