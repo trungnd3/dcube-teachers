@@ -42,5 +42,7 @@ RUN npm install --omit=dev
 # Copy the built application from the previous stage
 COPY --from=build /app/dist ./dist
 
+RUN ls -la /app/dist
+
 # Command to run the app
 CMD npm run migration:run && node dist/main
