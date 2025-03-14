@@ -67,6 +67,8 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
+          docker pull manguardian/dcube-teachers:latest
+
           if [ -n "$(docker container ls -a -q --filter "name=dcube-teachers")" ]; then
             docker container stop dcube-teachers
             docker container rm dcube-teachers
