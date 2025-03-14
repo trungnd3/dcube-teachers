@@ -67,7 +67,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
-          if [ -n "$(docker container ls -q --filter "name=dcube-teachers")" ]; then
+          if [ -n "$(docker container ls -a -q --filter "name=dcube-teachers")" ]; then
             docker container stop dcube-teachers
             docker container rm dcube-teachers
           fi
