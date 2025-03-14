@@ -17,6 +17,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Login docker
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build prod image
+        run: docker build -t manguardian/dcube-teachers .
+
+      - name: Push image to docker hub
+        run: |
+          docker push manguardian/dcube-teachers
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -29,7 +39,7 @@ jobs:
 
       - name: Create env file and copy to EC2
         run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" > .env
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
@@ -38,33 +48,29 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} "mkdir -p env"
           scp -o StrictHostKeyChecking=no -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
-      - name: Clone or pull github repo
-        run: |
-          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+      # - name: Clone or pull github repo
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
 
-          REPO_URL="https://github.com/trungnd3/dcube-teachers.git"
+      #     REPO_URL="https://github.com/trungnd3/dcube-teachers.git"
 
-          if [ -d "$HOME/dcube-teachers/.git" ]; then
-            cd $HOME/dcube-teachers
-            git pull origin main
-          else
-            git clone $REPO_URL
-            cd $HOME/dcube-teachers
-          fi
-          '
+      #     if [ -d "$HOME/dcube-teachers/.git" ]; then
+      #       cd $HOME/dcube-teachers
+      #       git pull origin main
+      #     else
+      #       git clone $REPO_URL
+      #       cd $HOME/dcube-teachers
+      #     fi
+      #     '
 
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
-
-          cp $HOME/env/.env $HOME/dcube-teachers
-          cd $HOME/dcube-teachers
-          docker build -t dcube-teachers .
 
           if [ -n "$(docker container ls -a -q --filter "name=dcube-teachers")" ]; then
             docker container stop dcube-teachers
             docker container rm dcube-teachers
           fi
 
-          docker run --name dcube-teachers -d --env-file .env -p 443:3000 -p 80:3000 dcube-teachers
+          docker run --name dcube-teachers -d --env-file .env -p 443:3000 -p 80:3000 manguardian/dcube-teachers
           '
