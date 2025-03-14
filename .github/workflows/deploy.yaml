@@ -34,7 +34,7 @@ jobs:
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          # cat .env
+          echo "NODE_ENV=production" >> .env
           ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} "mkdir -p env"
           scp -o StrictHostKeyChecking=no -i github-ec2.pem .env ${USER}@${HOST}:~/env
 
@@ -60,7 +60,11 @@ jobs:
           cp $HOME/env/.env $HOME/dcube-teachers
           cd $HOME/dcube-teachers
           docker build -t dcube-teachers .
-          docker container stop dcube-teachers
-          docker container rm dcube-teachers
+
+          if [ -n "$(docker container ls -q --filter "name=dcube-teachers")" ]; then
+            docker container stop dcube-teachers
+            docker container rm dcube-teachers
+          fi
+
           docker run --name dcube-teachers -d --env-file .env -p 443:3000 -p 80:3000 dcube-teachers
           '

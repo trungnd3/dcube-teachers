@@ -1,26 +1,31 @@
-version: '3'
-
 services:
   db:
     image: mysql
+    container_name: dcube-teachers-db
     restart: always
     networks:
       - dcube-teachers-network
     env_file:
-      - .env.dev
+      - .env_mysql.dev
 
   api:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    container_name: dcube-teachers-api
     restart: always
     networks:
       - dcube-teachers-network
     env_file:
       - .env.dev
     environment:
-      - DB_HOST=db
+      - DB_HOST=dcube-teachers-db
       - DB_PORT=3306
+      - NODE_ENV=development
+    # command: >
+    #   bash -c "npm run migration:generate -- migrations/Init
+    #   && npm run migration:run
+    #   && npm run start:dev"
     ports:
       - 3000:3000
     volumes:

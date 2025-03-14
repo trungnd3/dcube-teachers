@@ -1,18 +1,17 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { literals } from 'src/constants';
 import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
 import { StudentsService } from 'src/students/students.service';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class TeachersService {
   constructor(
-    @Inject(literals.TEACHER_REPOSITORY)
+    @InjectRepository(Teacher)
     private repo: Repository<Teacher>,
 
     private studentsService: StudentsService,
