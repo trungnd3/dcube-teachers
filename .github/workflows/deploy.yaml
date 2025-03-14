@@ -72,5 +72,5 @@ jobs:
             docker container rm dcube-teachers
           fi
 
-          docker run --name dcube-teachers -d --env-file ~/env/.env -p 443:3000 -p 80:3000 manguardian/dcube-teachers
+          docker run --name dcube-teachers -d --env-file ~/env/.env -p 443:3000 -p 80:3000 manguardian/dcube-teachers:latest
           '
