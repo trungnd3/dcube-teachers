@@ -61,7 +61,7 @@ jobs:
           cd $HOME/dcube-teachers
           docker build -t dcube-teachers .
 
-          if [ -n "$(docker container ls -q --filter "name=dcube-teachers")" ]; then
+          if [ -n "$(docker container ls -a -q --filter "name=dcube-teachers")" ]; then
             docker container stop dcube-teachers
             docker container rm dcube-teachers
           fi
