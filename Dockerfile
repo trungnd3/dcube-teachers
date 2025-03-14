@@ -45,4 +45,4 @@ COPY --from=build /app/dist ./dist
 RUN ls -la /app/dist
 
 # Command to run the app
-CMD ["npm", "run", "migration:run", "&&", "node", "dist/src/main"]
+CMD ["/bin/bash", "-c", "npm run migration:run && node /app/dist/src/main"]
