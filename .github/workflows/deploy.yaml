@@ -1,4 +1,4 @@
-name: Build and deploy to EC2
+name: Deploy to Cloud Run
 
 on:
   push:
@@ -8,30 +8,38 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      PRIVATE_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
-      HOST: ${{ secrets.AWS_EC2_HOST }}
-      USER: ${{ secrets.AWS_EC2_USER }}
+    permissions:
+      contents: 'read'
+      id-token: 'write'
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Authenticate to ECR
-        run : aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_REPO_URI }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Build docker image
-        run: docker build -t manguardian/dcube-teachers .
-
-      - name: Tag docker image
-        run: docker tag manguardian/dcube-teachers:latest ${{ secrets.AWS_ECR_REPO_URI }}:latest
+        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/nest-app .
 
       - name: Push the image to ECR
-        run: docker push ${{ secrets.AWS_ECR_REPO_URI }}:latest
+        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/nest-app
+
+      - name: Authenticate with Workload Identity Federation
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/${{ secrets.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+          service_account: "github-actions@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
+
+      - name: Configure gcloud CLI
+        run: |
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud auth list
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ secrets.GCP_CLOUD_RUN_SERVICE }} \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/nest-app \
+            --platform managed \
+            --region asia-southeast1 \
+            --allow-unauthenticated \
+            --add-cloudsql-instances=${{ secrets.INSTANCE_CONNECTION_NAME }}
+            --set-env-vars "DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_DATABASE=${{ secrets.DB_DATABASE }},INSTANCE_CONNECTION_PATH=/cloudsql/${{ secrets.INSTANCE_CONNECTION_NAME }}"
