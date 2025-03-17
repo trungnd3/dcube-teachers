@@ -26,7 +26,7 @@ jobs:
       - name: Configure gcloud CLI
         run: |
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud auth list
+          gcloud auth configure-docker
 
       - name: Build docker image
         run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/nest-app .
