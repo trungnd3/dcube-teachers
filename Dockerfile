@@ -42,7 +42,9 @@ RUN npm install --omit=dev
 # Copy the built application from the previous stage
 COPY --from=build /app/dist ./dist
 
-RUN ls -la /app/dist
+ENV PORT=8080
+
+EXPOSE 8080
 
 # Command to run the app
 CMD ["/bin/sh", "-c", "npm run migration:run && node /app/dist/src/main"]
