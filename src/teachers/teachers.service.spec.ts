@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
 import { Repository } from 'typeorm';
-import { literals } from 'src/constants';
 import { StudentsService } from 'src/students/students.service';
 import { Student } from 'src/students/student.entity';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 const testStudentEmail = 'test_student@mail.com';
 
@@ -54,12 +54,12 @@ describe('TeachersService', () => {
       providers: [
         TeachersService,
         {
-          provide: literals.TEACHER_REPOSITORY,
+          provide: getRepositoryToken(Teacher),
           useValue: fakeTeachersRepo,
         },
         StudentsService,
         {
-          provide: literals.STUDENT_REPOSITORY,
+          provide: getRepositoryToken(Student),
           useValue: fakeStudentsRepo,
         },
       ],

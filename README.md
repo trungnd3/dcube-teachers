@@ -6,7 +6,7 @@ This is a submission for the [GovTech Student Management for Teachers](https://g
 
 ## 💻 Table of Contents
 
-- 🔗 Deployments: TODO
+- 🔗 [Deployments](#deployments)
 - Database Diagram: TODO
 - 🗄️ [Project Structure](#project-structure)
 - ⚙️ [Installation](#installation)
@@ -14,8 +14,17 @@ This is a submission for the [GovTech Student Management for Teachers](https://g
 - 🧪 [Run Unit Tests](#run-unit-tests): Incomplete
 - 🧪 Run E2E Tests: TODO
 - 🧱 [Technologies Used](#technologies-used)
-- 📷 Preview: TODO
 - 📝 [Assumptions](#assumptions)
+
+<h2 id="deployments">Deployments</h2>
+
+### GCP
+1. Database: CloudSQL
+2. Service: CloudRun
+3. Docker Registry: Artifact Registry
+
+The project has a [github workflow](.github/workflows/deploy.yaml) to build a docker image and push it to Artifact Registry, following by a command which deploys changes to the CloudRun:
+https://dcube-teachers-157732259470.asia-southeast1.run.app
 
 <h2 id="project-structure">🗄️ Project Structure</h2>
 
@@ -77,7 +86,7 @@ Your API is now ready to be served at http://localhost:3000
 <h2 id="run-unit-tests">🧪 Run Unit Tests</h2>
 
 ```bash
-npm run test:watch
+npm run test
 ```
 
 <h2 id="technologies-used">🧱 Technologies Used</h2>

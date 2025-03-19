@@ -21,7 +21,9 @@ export class StudentsService {
     return null;
   }
 
-  findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
+  async findByEmail(email: string) {
+    const student = await this.repo.findOne({ where: { email } });
+    // console.log('findByEmail', student);
+    return student;
   }
 }
