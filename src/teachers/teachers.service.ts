@@ -61,7 +61,7 @@ export class TeachersService {
       }
 
       // Add student to teacher's student list
-      if (!teacher.students || teacher.students.length === 0) {
+      if (!teacher.students) {
         teacher.students = [];
       }
 
@@ -141,7 +141,7 @@ export class TeachersService {
 
     for (const mention of mentions) {
       if (!recipients.includes(mention)) {
-        recipients.push(mention);
+        recipients.push(mention.substring(1));
       }
     }
 

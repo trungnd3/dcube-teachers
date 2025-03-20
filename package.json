@@ -67,8 +67,19 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverage": true,
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.{js,ts}",
+      "!**/*.module.{js,ts}",
+      "!**/*.entity.{js,ts}",
+      "!**/*.dto.{js,ts}",
+      "!**/index.{js,ts}",
+      "!constants.ts",
+      "!data-source.ts",
+      "!main.{js,ts}",
+      "!mocks/**",
+      "!**/*.mock.{js,ts}",
+      "!**/__mocks__/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { StudentsService } from './students.service';
+import { mockRepositoryFactory } from 'src/mocks/repository.mock';
 import { Student } from './student.entity';
-import { Repository } from 'typeorm';
-import { literals } from 'src/constants';
 
 const testStudentEmail = 'test_student@mail.com';
 
@@ -14,51 +14,57 @@ const studentsArray = [
   { id: 3, email: 'test3@mail.com' } as Student,
 ];
 
+const createdId = 4;
+const createdStudent: Student = {
+  id: createdId,
+  email: 'created_student@mail.com',
+};
+
 describe('StudentsService', () => {
-  let service: StudentsService;
-  let fakeRepo: Partial<Repository<Student>>;
+  let studentsService: StudentsService;
+  const fakeRepo = mockRepositoryFactory<Student>(
+    studentsArray,
+    createdId,
+    createdStudent,
+  );
 
   beforeEach(async () => {
-    fakeRepo = {
-      find: jest.fn().mockResolvedValue(studentsArray),
-      findOne: jest.fn().mockResolvedValue(oneStudent),
-      create: jest.fn().mockResolvedValue(oneStudent),
-      save: jest
-        .fn()
-        .mockImplementation((student: Student) => Promise.resolve(student)),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StudentsService,
         {
-          provide: literals.STUDENT_REPOSITORY,
+          provide: getRepositoryToken(Student),
           useValue: fakeRepo,
         },
       ],
     }).compile();
 
-    service = module.get<StudentsService>(StudentsService);
+    studentsService = module.get<StudentsService>(StudentsService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(studentsService).toBeDefined();
   });
 
   it('should find student by email that exists', async () => {
-    const student = await service.findByEmail(oneStudent.email);
+    const student = await studentsService.findByEmail(oneStudent.email);
     expect(student).not.toBeNull();
     expect(student.id).toEqual(oneStudent.id);
   });
 
-  // it('should not find student by email that does not exist', async () => {
-  //   const student = await service.findByEmail('rubbish@email');
-  //   expect(student).toBeNull();
-  // });
+  it('should not find student by email that does not exist', async () => {
+    const student = await studentsService.findByEmail('rubbish@email');
+    expect(student).toBeNull();
+  });
 
   it('should create by email if not exist', async () => {
-    const student = await service.create(oneStudent.email);
+    const student = await studentsService.create('created_student@mail.com');
     expect(student).not.toBeNull();
-    expect(student.id).toEqual(oneStudent.id);
+    expect(student.id).toEqual(createdStudent.id);
+  });
+
+  it('should not create by email if exist', async () => {
+    const student = await studentsService.create(oneStudent.email);
+    expect(student).toBeNull();
   });
 });
