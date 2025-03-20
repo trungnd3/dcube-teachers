@@ -1,75 +1,101 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiService } from './api.service';
 import { Teacher } from 'src/teachers/teacher.entity';
-import { Repository } from 'typeorm';
 import { Student } from 'src/students/student.entity';
 import { TeachersService } from 'src/teachers/teachers.service';
-import { StudentsService } from 'src/students/students.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-
-const testStudentEmail = 'test_student@mail.com';
-
-const oneStudent = { id: 1, email: testStudentEmail } as Student;
-
-const studentsArray = [
-  oneStudent,
-  { id: 2, email: 'test2@mail.com' } as Student,
-  { id: 3, email: 'test3@mail.com' } as Student,
-];
-
-const testTeacherEmail = 'test_teacher@mail.com';
-
-const oneTeacher = { id: 1, email: testTeacherEmail } as Teacher;
-
-const teachersArray = [
-  oneTeacher,
-  { id: 2, email: 'test2@mail.com' } as Teacher,
-  { id: 3, email: 'test3@mail.com' } as Teacher,
-];
+import { generateStudentData, generateTeacherData } from 'src/mocks/data.mock';
 
 describe('ApiService', () => {
-  let service: ApiService;
-  let fakeTeachersRepo: Partial<Repository<Teacher>>;
-  let fakeStudentsRepo: Partial<Repository<Student>>;
+  let apiService: ApiService;
+  let teachersService: TeachersService;
+  let teacher1: Teacher, teacher2: Teacher;
+  let studentsArray: Student[];
 
-  beforeEach(async () => {
-    fakeStudentsRepo = {
-      find: jest.fn().mockResolvedValue(studentsArray),
-      findOne: jest.fn().mockResolvedValue(oneStudent),
-      create: jest.fn().mockResolvedValue(oneStudent),
-      save: jest
-        .fn()
-        .mockImplementation((student: Student) => Promise.resolve(student)),
-    };
-    fakeTeachersRepo = {
-      find: jest.fn().mockResolvedValue(teachersArray),
-      findOne: jest.fn().mockResolvedValue(oneTeacher),
-      create: jest.fn().mockResolvedValue(oneTeacher),
-      save: jest
-        .fn()
-        .mockImplementation((teacher: Teacher) => Promise.resolve(teacher)),
-    };
+  let apiModule: TestingModule;
+  const mockTeachersService = {
+    findAll: jest.fn(),
+    findByEmail: jest.fn(),
+    create: jest.fn(),
+    registerStudents: jest.fn(),
+    findCommonStudents: jest.fn(),
+    suspendStudent: jest.fn(),
+    getForNotification: jest.fn(),
+  };
 
-    const module: TestingModule = await Test.createTestingModule({
+  async function getModule() {
+    return Test.createTestingModule({
       providers: [
         ApiService,
-        TeachersService,
-        {
-          provide: getRepositoryToken(Teacher),
-          useValue: fakeTeachersRepo,
-        },
-        StudentsService,
-        {
-          provide: getRepositoryToken(Student),
-          useValue: fakeStudentsRepo,
-        },
+        { provide: TeachersService, useValue: mockTeachersService },
       ],
     }).compile();
+  }
 
-    service = module.get<ApiService>(ApiService);
+  beforeEach(async () => {
+    ({ studentsArray } = generateStudentData());
+    ({ teacher1, teacher2 } = generateTeacherData(studentsArray));
+
+    apiModule = await getModule();
+    teachersService = apiModule.get<TeachersService>(TeachersService);
+    apiService = apiModule.get<ApiService>(ApiService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(apiService).toBeDefined();
+  });
+
+  it('should call findAll by teachersService when getAllTeacher', async () => {
+    await apiService.getAllTeacher();
+    expect(teachersService.findAll).toHaveBeenCalled();
+  });
+
+  it('should call create by teachersService when createTeacher', async () => {
+    await apiService.createTeacher('non_exist@mail.com');
+    expect(teachersService.create).toHaveBeenCalledWith('non_exist@mail.com');
+  });
+
+  it('should call registerStudents by teachersService when register', async () => {
+    await apiService.register(teacher1.email, [
+      studentsArray[0].email,
+      studentsArray[1].email,
+    ]);
+    expect(teachersService.registerStudents).toHaveBeenCalledWith(
+      teacher1.email,
+      [studentsArray[0].email, studentsArray[1].email],
+    );
+  });
+
+  it('should call findCommonStudents by teachersService when getCommonStudents with string', async () => {
+    await apiService.getCommonStudents(teacher1.email);
+    expect(teachersService.findCommonStudents).toHaveBeenCalledWith([
+      teacher1.email,
+    ]);
+  });
+
+  it('should call findCommonStudents by teachersService when getCommonStudents', async () => {
+    await apiService.getCommonStudents([teacher1.email, teacher2.email]);
+    expect(teachersService.findCommonStudents).toHaveBeenCalledWith([
+      teacher1.email,
+      teacher2.email,
+    ]);
+  });
+
+  it('should call suspendStudent by teachersService when suspendStudent', async () => {
+    await apiService.suspendStudent(teacher1.email, teacher1.students[0].email);
+    expect(teachersService.suspendStudent).toHaveBeenCalledWith(
+      teacher1.email,
+      teacher1.students[0].email,
+    );
+  });
+
+  it('should call getForNotification by teachersService when getForNotification', async () => {
+    await apiService.getForNotification({
+      teacher: teacher1.email,
+      notification: 'notification',
+    });
+    expect(teachersService.getForNotification).toHaveBeenCalledWith(
+      teacher1.email,
+      'notification',
+    );
   });
 });
