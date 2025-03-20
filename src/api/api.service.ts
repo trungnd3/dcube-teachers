@@ -18,7 +18,7 @@ export class ApiService {
     return this.teachersService.registerStudents(teacherEmail, studentEmails);
   }
 
-  getCommonStudents(teacherEmails: string[]) {
+  getCommonStudents(teacherEmails: string[] | string) {
     if (!isArray(teacherEmails)) {
       teacherEmails = [teacherEmails];
     }
