@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeachersService } from './teachers.service';
 import { Teacher } from './teacher.entity';
-import { StudentsService } from 'src/students/students.service';
-import { Student } from 'src/students/student.entity';
+import { StudentsService } from '@src//students/students.service';
+import { Student } from '@src/students/student.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockRepositoryFactory } from 'src/mocks/repository.mock';
+import { mockRepositoryFactory } from '@src/mocks/repository.mock';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { generateStudentData, generateTeacherData } from 'src/mocks/data.mock';
+import { generateStudentData, generateTeacherData } from '@src/mocks/data.mock';
 
 describe('TeachersService', () => {
   let teachersService: TeachersService;

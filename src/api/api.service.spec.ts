@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiService } from './api.service';
-import { Teacher } from 'src/teachers/teacher.entity';
-import { Student } from 'src/students/student.entity';
-import { TeachersService } from 'src/teachers/teachers.service';
-import { generateStudentData, generateTeacherData } from 'src/mocks/data.mock';
+import { Teacher } from '@src/teachers/teacher.entity';
+import { Student } from '@src/students/student.entity';
+import { TeachersService } from '@src/teachers/teachers.service';
+import { generateStudentData, generateTeacherData } from '@src/mocks/data.mock';
 
 describe('ApiService', () => {
   let apiService: ApiService;

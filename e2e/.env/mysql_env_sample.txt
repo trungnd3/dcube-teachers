@@ -1,0 +1,5 @@
+# Rename this file to .mysql.env
+MYSQL_ROOT_PASSWORD=dcube
+MYSQL_USER=dcube
+MYSQL_PASSWORD=dcube
+MYSQL_DATABASE=dcube

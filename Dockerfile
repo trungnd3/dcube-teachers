@@ -47,4 +47,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Command to run the app
-CMD ["/bin/sh", "-c", "npm run migration:run && node /app/dist/src/main"]
+CMD ["/bin/sh", "-c", "npm run migration:run && npm run start:prod"]
