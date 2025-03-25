@@ -6,7 +6,12 @@ services:
     networks:
       - dcube-teachers-network
     env_file:
-      - .env_mysql.dev
+      - .env/.mysql.env
+    healthcheck:
+      test: "mysql $$MYSQL_DATABASE -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1;'"
+      interval: 20s
+      timeout: 10s
+      retries: 5
 
   api:
     build:
@@ -17,21 +22,19 @@ services:
     networks:
       - dcube-teachers-network
     env_file:
-      - .env.dev
+      - .env/.env
     environment:
       - DB_HOST=db
       - DB_PORT=3306
       - NODE_ENV=development
-    # command: >
-    #   bash -c "npm run migration:generate -- migrations/Init
-    #   && npm run migration:run
-    #   && npm run start:dev"
     ports:
-      - 8080:8080
+      - 3000:3000
     volumes:
       - .:/usr/src/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        restart: true
 
 networks:
   dcube-teachers-network:

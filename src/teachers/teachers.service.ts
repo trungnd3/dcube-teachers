@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Teacher } from './teacher.entity';
-import { StudentsService } from 'src/students/students.service';
+import { StudentsService } from '@src/students/students.service';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -18,7 +18,11 @@ export class TeachersService {
   ) {}
 
   findAll() {
-    return this.repo.find();
+    return this.repo.find({
+      relations: {
+        students: true,
+      },
+    });
   }
 
   findByEmail(email: string) {
@@ -131,6 +135,10 @@ export class TeachersService {
     }
 
     const recipients = teacher.students.map((s) => s.email);
+
+    if (!notification) {
+      return recipients;
+    }
 
     const pattern = /\B@[a-zA-Z0-9_@.]+/gi;
     const mentions = notification.match(pattern);

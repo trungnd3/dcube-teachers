@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { StudentsService } from './students.service';
-import { mockRepositoryFactory } from 'src/mocks/repository.mock';
+import { mockRepositoryFactory } from '@src/mocks/repository.mock';
 import { Student } from './student.entity';
 
 const testStudentEmail = 'test_student@mail.com';

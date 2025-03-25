@@ -1,4 +1,4 @@
-import { Student } from 'src/students/student.entity';
+import { Student } from '@src/students/student.entity';
 import {
   Column,
   Entity,
