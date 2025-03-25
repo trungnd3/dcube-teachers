@@ -1,0 +1,5 @@
+# Rename this to .env
+DB_USER=dcube
+DB_PASSWORD=dcube
+DB_DATABASE=dcube
+PORT=3000

@@ -17,6 +17,11 @@ import { GetForNotificationDto } from './dtos/get-for-notification.dto';
 export class ApiController {
   constructor(private apiService: ApiService) {}
 
+  @Get('/')
+  healthcheck() {
+    return 'healthy';
+  }
+
   @Get('/teachers')
   getAllTeachers() {
     return this.apiService.getAllTeacher();
@@ -53,6 +58,7 @@ export class ApiController {
   }
 
   @Post('/retrievefornotifications')
+  @HttpCode(HttpStatus.OK)
   getForNotification(@Body() getForNotification: GetForNotificationDto) {
     return this.apiService.getForNotification(getForNotification);
   }

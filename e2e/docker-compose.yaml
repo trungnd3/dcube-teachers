@@ -1,0 +1,57 @@
+services:
+  e2e:
+    build:
+      dockerfile: ./Dockerfile
+    container_name: dcube-teachers-test-e2e
+    volumes:
+      - ./specs:/usr/src/app/specs
+    networks:
+      - dcube-teachers-test-network
+    env_file:
+      - .env/.env
+    environment:
+      - DB_HOST=test-db
+      - DB_PORT=3306
+      - NODE_ENV=test
+      - API_BASE_URI=http://test-api:8080/api
+    depends_on:
+      test-api:
+        condition: service_healthy
+        restart: true
+  test-db:
+    image: mysql
+    container_name: dcube-teachers-test-db
+    restart: always
+    networks:
+      - dcube-teachers-test-network
+    env_file:
+      - .env/.mysql.env
+    healthcheck:
+      test: "mysql $$MYSQL_DATABASE -u$$MYSQL_USER -p$$MYSQL_PASSWORD -e 'SELECT 1;'"
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  test-api:
+    image: gcr.io/dcube-teachers/nest-app:latest
+    container_name: dcube-teachers-test-api
+    networks:
+      - dcube-teachers-test-network
+    env_file:
+      - .env/.env
+    environment:
+      - DB_HOST=test-db
+      - DB_PORT=3306
+      - NODE_ENV=test
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://test-api:8080/api || exit 1
+      interval: 20s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      test-db:
+        condition: service_healthy
+        restart: true
+
+networks:
+  dcube-teachers-test-network:

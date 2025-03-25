@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:20
+FROM node:20-alpine
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -13,13 +13,13 @@ RUN npm install
 # Copy the rest of the application files
 COPY . .
 
-# # Build the NestJS application
-# RUN npm run build
+# Need to build to get entity.js files inside dist folder
+# Since migration will need these instead of entity.ts files
+RUN npm run build
 
 # Expose the application port
 EXPOSE 3000
 
 # Command to run the application
-# CMD ["npm", "run", "start:dev"]
-# CMD ["ls"]
-CMD npm run migration:generate -- migrations/Init && npm run start:dev
+# CMD npm run migration:generate -- migrations/Init && npm run start:dev
+CMD ["npm", "run", "start:dev"]

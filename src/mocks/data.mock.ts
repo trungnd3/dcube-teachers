@@ -1,5 +1,5 @@
-import { Student } from 'src/students/student.entity';
-import { Teacher } from 'src/teachers/teacher.entity';
+import { Student } from '@src/students/student.entity';
+import { Teacher } from '@src/teachers/teacher.entity';
 
 export function generateStudentData() {
   const student1 = { id: 1, email: 'student1@mail.com' } as Student;

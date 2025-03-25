@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { isArray } from 'class-validator';
-import { TeachersService } from 'src/teachers/teachers.service';
+import { TeachersService } from '@src/teachers/teachers.service';
 
 @Injectable()
 export class ApiService {
